@@ -27,5 +27,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
     compile files('libs/vecmath.jar')
-    compile files('libs/jbox2d-library-2.2.1.1.jar')
+    compile files('libs/jbullet.jar')
+    compile files('libs/JBox2d4Android_2.1.2.jar')
 }

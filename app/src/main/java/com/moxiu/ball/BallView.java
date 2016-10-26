@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -17,6 +20,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.contacts.Contact;
 
 import java.util.ArrayList;
 
@@ -69,7 +73,7 @@ public class BallView extends View {
         boundsSize = BOUND_SIZE_DP * density;
         pixelsPerMeter = getResources()
                 .getDimensionPixelSize(R.dimen.physics_layout_dp_per_meter);
-        world = new World(new Vec2(gravityX, gravityY));
+        world = new World(new Vec2(gravityX, gravityY),true);
         createTopAndBottomBounds();
         createLeftAndRightBounds();
         bounds.add(createBall());
@@ -77,6 +81,27 @@ public class BallView extends View {
         debugPaint = new Paint();
         debugPaint.setColor(Color.MAGENTA);
         debugPaint.setStyle(Paint.Style.FILL);
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold manifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse contactImpulse) {
+
+            }
+        });
     }
 
     @Override
@@ -108,6 +133,7 @@ public class BallView extends View {
         //弹力
         fixtureDef.restitution = 0.5f;
 
+
         fixtureDef.userData = "physics_layout_bound_top";
         //设置位置
         bodyDef.position.set(0,0);
@@ -120,7 +146,7 @@ public class BallView extends View {
 
         //创建底部边界
         fixtureDef.userData = "physics_layout_body_bottom";
-        bodyDef.position.set(0, pixelsToMeters(-height) + boxHeight);
+        bodyDef.position.set(0, pixelsToMeters(-height) );
         Body bottomBody = world.createBody(bodyDef);
         bottomBody.createFixture(fixtureDef);
         bounds.add(bottomBody);
@@ -142,7 +168,6 @@ public class BallView extends View {
         fixtureDef.friction = 0.3f;
         //弹力
         fixtureDef.restitution = 0.5f;
-
 
         fixtureDef.userData = "physics_layout_body_left";
         bodyDef.position.set(-boxWidth,0);
@@ -179,7 +204,10 @@ public class BallView extends View {
         fixtureDef.shape = config.shapeType == PhysicsConfig.SHAPE_TYPE_RECTANGLE
                 ? createBoxShape(96f,96f) : createCircleShape(96f,96f, config);
         fixtureDef.userData ="physics_layout_body_ball_a";
+
         Body body = world.createBody(bodyDef);
+        body.setBullet(true);
+
         body.createFixture(fixtureDef);
 
 
@@ -200,14 +228,15 @@ public class BallView extends View {
         config.fixtureDef.density = 1f;
 
         BodyDef bodyDef = config.bodyDef;
-        bodyDef.position.set(pixelsToMeters(width/2-48),
-                pixelsToMeters(-100));
+        bodyDef.position.set(pixelsToMeters(width/2),
+                pixelsToMeters(-300));
 //        bodyDef.angularVelocity = degreesToRadians(3);
         FixtureDef fixtureDef = config.fixtureDef;
         fixtureDef.shape = config.shapeType == PhysicsConfig.SHAPE_TYPE_RECTANGLE
                 ? createBoxShape(pixelsToMeters(96f),pixelsToMeters(96f)) : createCircleShape(pixelsToMeters(96f),pixelsToMeters(96f), config);
         fixtureDef.userData ="physics_layout_body_ball_b";
         Body body = world.createBody(bodyDef);
+        body.setBullet(true);
         body.createFixture(fixtureDef);
 
 
@@ -229,7 +258,7 @@ public class BallView extends View {
             config.radius = Math.max(w / 2,h / 2);
         }
 
-        circle.m_radius = pixelsToMeters(config.radius);
+        circle.m_radius = pixelsToMeters(48f);
         return circle;
     }
 
@@ -279,7 +308,7 @@ public class BallView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
-        world.step(FRAME_RATE, velocityIterations, positionIterations);
+        world.step(FRAME_RATE, 10, 8);
 
         //                float x=metersToPixels(body.getPosition().x) - boxWidth / 2;
 //                float y=metersToPixels(body.getPosition().y) - boxHeight / 2;
@@ -299,7 +328,7 @@ public class BallView extends View {
                     float x = body.getPosition().x;
                     float y = body.getPosition().y;
                     float releateX=metersToPixels(body.getPosition().x);
-                    float releateY=metersToPixels(body.getPosition().y);
+                    float releateY=-metersToPixels(body.getPosition().y);
                     canvas.drawRect(releateX, releateY-boundSize, releateX + width, releateY , debugPaint);
                 }else if(mFixtrue.getUserData().equals("physics_layout_body_ball_a")){
                     float x = body.getPosition().x;
