@@ -38,7 +38,7 @@ import static com.moxiu.ball.PhysicsConfig.SHAPE_TYPE_CIRCLE;
  * Created by ferris.xu on 2016/10/21.
  */
 
-public class BallView extends View {
+public class JointView extends View {
     public static final float NO_GRAVITY = 0.0f;
     public static final float MOON_GRAVITY = -1.6f;
     public static final float EARTH_GRAVITY = -9.8f;
@@ -59,23 +59,21 @@ public class BallView extends View {
     private int positionIterations = 3;
     private Paint debugPaint;
 
-    public BallView(Context context) {
+    public JointView(Context context) {
         super(context);
 
     }
 
-    public BallView(Context context, AttributeSet attrs) {
+    public JointView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
     }
 
-    public BallView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public JointView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
     }
     Body ball_1,ball_2;
-
-
 
     public void init() {
         density = getResources().getDisplayMetrics().density;
@@ -113,7 +111,7 @@ public class BallView extends View {
 
             }
         });
-//        createPulleyJoint();
+        createPulleyJoint();
     }
 
     @Override
